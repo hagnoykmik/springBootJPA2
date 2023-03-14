@@ -42,4 +42,9 @@ public class MemberService {
         return memberRepository.findOne(memberId);
     }
 
+    @Transactional  // commit시점에 jpa가 플러쉬 -> 영속성 컨텍스트 커밋
+    public void update(Long id, String name) {
+        Member member = memberRepository.findOne(id);
+        member.setName(name);
+    }
 }
