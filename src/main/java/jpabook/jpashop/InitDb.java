@@ -40,69 +40,69 @@ public class InitDb {
 
         public void dbInit1() {
             // user
-            Member member = getMember();
+            Member member = createMember("userA", "서울", "1", "1111");
             em.persist(member);
 
             // book
-            Book book1 = new Book();
-            book1.setName("JPA1 BOOK");
-            book1.setPrice(10000);
-            book1.setStockQuantity(100);
+            Book book1 = createBook("JPA1 BOOK", 10000, 100);
             em.persist(book1);
 
-            Book book2 = new Book();
-            book2.setName("JPA2 BOOK");
-            book2.setPrice(20000);
-            book2.setStockQuantity(100);
+            Book book2 = createBook("JPA2 BOOK", 20000, 100);
             em.persist(book2);
 
             // 엮기
             OrderItem orderItem1 = OrderItem.createOrderItem(book1, 10000, 1);
-            OrderItem orderItem2 = OrderItem.createOrderItem(book2, 20000, 1);
+            OrderItem orderItem2 = OrderItem.createOrderItem(book2, 20000, 2);
 
             // delivery
-            Delivery delivery = new Delivery();
-            delivery.setAddress(member.getAddress());
+            Delivery delivery = createDelivery(member);
 
             Order order = Order.createOrder(member, delivery, orderItem1, orderItem2);
             em.persist(order);
-        }
-
-        private Member createMember(String name, String city, String zipcode,String ) {
-            Member member = new Member();
-            member.setName("userA");
-            member.setAddress(new Address("서울", "1", "1111"));
-            return member;
         }
 
         public void dbInit2() {
             // user
-            Member member = createMember("부산", "2", "2222" );
+            Member member = createMember("userB","부산", "2", "2222" );
             em.persist(member);
 
             // book
-            Book book1 = new Book();
-            book1.setName("JPA1 BOOK");
-            book1.setPrice(10000);
-            book1.setStockQuantity(100);
+            Book book1 = createBook("Spring1 BOOK", 20000, 200);
             em.persist(book1);
 
-            Book book2 = new Book();
-            book2.setName("JPA2 BOOK");
-            book2.setPrice(20000);
-            book2.setStockQuantity(100);
+            Book book2 = createBook("Spring2 BOOK", 40000, 300);
             em.persist(book2);
 
             // 엮기
-            OrderItem orderItem1 = OrderItem.createOrderItem(book1, 10000, 1);
-            OrderItem orderItem2 = OrderItem.createOrderItem(book2, 20000, 1);
+            OrderItem orderItem1 = OrderItem.createOrderItem(book1, 20000, 3);
+            OrderItem orderItem2 = OrderItem.createOrderItem(book2, 40000, 4);
 
             // delivery
-            Delivery delivery = new Delivery();
-            delivery.setAddress(member.getAddress());
+            Delivery delivery = createDelivery(member);
 
             Order order = Order.createOrder(member, delivery, orderItem1, orderItem2);
             em.persist(order);
+        }
+
+        private Delivery createDelivery(Member member) {
+            Delivery delivery = new Delivery();
+            delivery.setAddress(member.getAddress());
+            return delivery;
+        }
+
+        private Book createBook(String name, int price, int stockQuantity) {
+            Book book1 = new Book();
+            book1.setName(name);
+            book1.setPrice(price);
+            book1.setStockQuantity(stockQuantity);
+            return book1;
+        }
+
+        private Member createMember(String name, String city, String street,String zipcode) {
+            Member member = new Member();
+            member.setName(name);
+            member.setAddress(new Address(city, street, zipcode));
+            return member;
         }
     }
 }
