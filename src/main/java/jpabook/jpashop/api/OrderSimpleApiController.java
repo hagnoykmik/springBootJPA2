@@ -8,6 +8,7 @@ import jpabook.jpashop.domain.Order;
 import jpabook.jpashop.domain.OrderStatus;
 import jpabook.jpashop.repository.OrderRepository;
 import jpabook.jpashop.repository.OrderSearch;
+import jpabook.jpashop.repository.OrderSimpleQueryDto;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,8 +37,8 @@ public class OrderSimpleApiController {
         List<Order> orders = orderRepository.findAllByString(new OrderSearch());
         // 엔티티 -> Dto 변환
         List<SimpleOrderDto> result = orders.stream()
-            .map(o -> new SimpleOrderDto(o))
-            .collect(Collectors.toList());
+                .map(o -> new SimpleOrderDto(o))            // .map(a -> b) 로 변환 / 입력 컬렉션을 출력 컬렉션으로 매핑하거나 변경
+                .collect(Collectors.toList());              // 리스트로 변환 / 스트림에서 종단연산에 해당하는 .collect() 함수의 파라미터에 해당하는 인터페이스
         return result;
     }
 
@@ -49,7 +50,7 @@ public class OrderSimpleApiController {
         private OrderStatus orderStatus;
         private Address address;
 
-        // dto에서 엔티티에 의존 
+        // dto에서 엔티티에 의존
         // 생성자에서 완성
         public SimpleOrderDto(Order order) {
             orderId = order.getId();
@@ -58,5 +59,20 @@ public class OrderSimpleApiController {
             orderStatus = order.getStatus();
             address = order.getDelivery().getAddress();
         }
+    }
+
+    @GetMapping("/api/v3/simple-orders")
+    public List<SimpleOrderDto> ordersV3() {
+        List<Order> orders = orderRepository.findAllWithMemberDelivery();
+        List<SimpleOrderDto> result = orders.stream()
+                .map(o -> new SimpleOrderDto(o))
+                .collect(Collectors.toList());
+        return result;
+    }
+
+    // JPA에서 바로 DTO 조회
+    @GetMapping("/api/v4/simple-orders")
+    public List<OrderSimpleQueryDto> ordersV4() {
+        return orderRepository.findOrderDto();
     }
 }
